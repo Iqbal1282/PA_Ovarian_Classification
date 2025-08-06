@@ -37,7 +37,8 @@ train_transform = A.Compose([
     # ], p=0.6),
 
     # Normalize using paper settings (converted to single-channel equivalent)
-    A.Normalize(mean=(0.5,), std=(0.5,), max_pixel_value=1.0),  # Adapted for grayscale
+    #A.Normalize(mean=(0.5,), std=(0.5,), max_pixel_value=1.0),  # Adapted for grayscale
+    A.Normalize(mean=(0.0002,), std=(0.0004,), max_pixel_value=0.0272),  # Adapted for grayscale
 
     # Ensure padding to crop size
     A.PadIfNeeded(min_height=384, min_width=384, border_mode=0, value=0, p=1.0),
@@ -48,7 +49,8 @@ train_transform = A.Compose([
 
 val_transform = A.Compose([
     A.Resize(448, 448, p=1.0), 
-    A.Normalize(mean=(0.5,), std=(0.5,), max_pixel_value=1.0),
+    #A.Normalize(mean=(0.5,), std=(0.5,), max_pixel_value=1.0), 
+    A.Normalize(mean=(0.0002,), std=(0.0004,), max_pixel_value=0.0272),  # Adapted for grayscale
     ToTensorV2()
 ])
 
