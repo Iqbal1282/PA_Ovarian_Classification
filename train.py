@@ -62,26 +62,26 @@ for fold in range(k_fold):
     # test_dataset = Classificaiton_Dataset(phase='test', radiomics_dir=False)
 
     train_dataset = ROIMatDataset(
-        csv_path='PAT features/roi_thb_image_metadata.csv',
+        csv_path='PAT features/roi_so2_image_metadata.csv',
         mat_root_dir='PAT features/ROI_MAT',
-        label_type='GT',
+        label_type='SO2',
         phase='train',  # 'train', 'val', 'test'
         k_fold=5,
         fold=fold
     )
 
     val_dataset = ROIMatDataset(
-        csv_path='PAT features/roi_thb_image_metadata.csv', 
+        csv_path='PAT features/roi_so2_image_metadata.csv', 
         mat_root_dir='PAT features/ROI_MAT',
-        label_type='GT',
+        label_type='SO2',
         phase='val',  # 'train', 'val', 'test'
         k_fold=5,
         fold=fold
     )
     test_dataset = ROIMatDataset(
-        csv_path='PAT features/roi_thb_image_metadata.csv',     
+        csv_path='PAT features/roi_so2_image_metadata.csv',     
         mat_root_dir='PAT features/ROI_MAT',
-        label_type='GT',
+        label_type='SO2',
         phase='test',  # 'train', 'val', 'test'
         k_fold=5,
         fold=fold

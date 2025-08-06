@@ -1,0 +1,42 @@
+{
+  "os":  "Windows-11-10.0.26100-SP0",
+  "python":  "CPython 3.12.9",
+  "startedAt":  "2025-08-06T21:23:39.831097Z",
+  "program":  "c:\\Users\\mdiqb\\Desktop\\Ovarian_Cancer\\codebase\\codebase_wash2_pa_reviewed_data\\train.py",
+  "codePath":  "train.py",
+  "git":  {
+    "remote":  "https://github.com/Iqbal1282/PA_Ovarian_Classification.git",
+    "commit":  "a703f2b1215a5ed3a48cbde05ea2eea7ebf7124e"
+  },
+  "email":  "mdiqbalhossainj@gmail.com",
+  "root":  "C:\\Users\\mdiqb\\Desktop\\Ovarian_Cancer\\codebase\\codebase_wash2_pa_reviewed_data",
+  "host":  "optics_lab",
+  "executable":  "C:\\Users\\mdiqb\\anaconda3\\envs\\py312\\python.exe",
+  "codePathLocal":  "train.py",
+  "cpu_count":  16,
+  "cpu_count_logical":  24,
+  "gpu":  "NVIDIA GeForce RTX 4070 Ti",
+  "gpu_count":  1,
+  "disk":  {
+    "/":  {
+      "total":  "999321235456",
+      "used":  "916332601344"
+    }
+  },
+  "memory":  {
+    "total":  "17020575744"
+  },
+  "cpu":  {
+    "count":  16,
+    "countLogical":  24
+  },
+  "gpu_nvidia":  [
+    {
+      "name":  "NVIDIA GeForce RTX 4070 Ti",
+      "memoryTotal":  "12878610432",
+      "cudaCores":  7680,
+      "architecture":  "Ada"
+    }
+  ],
+  "cudaVersion":  "12.6"
+}

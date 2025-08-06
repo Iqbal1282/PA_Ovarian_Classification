@@ -10,7 +10,7 @@ from albumentations.pytorch import ToTensorV2
 import matplotlib.pyplot as plt
 
 
-train_transform = A.Compose([
+train_transform_THB = A.Compose([
     # Resize with ratio range
 	A.Resize(height=448, width=448, always_apply=True),
 	A.ElasticTransform(alpha = 10, sigma = 250, p=0.5),
@@ -18,23 +18,11 @@ train_transform = A.Compose([
 
     A.ShiftScaleRotate(shift_limit=(-0.005,0.005), scale_limit=(-0.2, 0.005), rotate_limit=(-30,30), border_mode=0, value=0, p=0.6),
 
-    # Random cropping to fixed size
-    #A.RandomCrop(height=384, width=384, p=1.0),
 	#A.RandomResizedCrop(size=(384, 384), scale=(0.9, 1.0), ratio=(0.9, 1.1), p=1.0),
 	A.RandomResizedCrop(size=(384, 384), scale=(0.8, 1.0), ratio=(0.75, 1.33), p=1.0),
 
     # Horizontal flip
     A.HorizontalFlip(p=0.5),
-
-    # A.ElasticTransform(alpha = 10, sigma = 250, p=0.5),
-    # A.GridDistortion(distort_limit=(-0.2,0.2), p=0.5),
-
-    # # Photometric distortions
-    # A.OneOf([
-    #     A.RandomBrightnessContrast(brightness_limit=0.2, contrast_limit=0.2, p=0.5),
-    #     A.CLAHE(clip_limit=2.0, p=0.3),
-    #     #A.HueSaturationValue(p=0.3),  # Doesn't apply to grayscale but included for RGB fallback
-    # ], p=0.6),
 
     # Normalize using paper settings (converted to single-channel equivalent)
     #A.Normalize(mean=(0.5,), std=(0.5,), max_pixel_value=1.0),  # Adapted for grayscale
@@ -47,7 +35,7 @@ train_transform = A.Compose([
 ])
 
 
-val_transform = A.Compose([
+val_transform_THB = A.Compose([
     A.Resize(448, 448, p=1.0), 
     #A.Normalize(mean=(0.5,), std=(0.5,), max_pixel_value=1.0), 
     A.Normalize(mean=(0.0002,), std=(0.0004,), max_pixel_value=0.0272),  # Adapted for grayscale
@@ -55,57 +43,45 @@ val_transform = A.Compose([
 ])
 
 
-# class ROISO2Dataset(Dataset):
-#     def __init__(self, csv_path, mat_root_dir, label_type='GT',  phase= 'train'):
-#         """
-#         Args:
-#             csv_path (str): Path to the CSV file.
-#             mat_root_dir (str): Folder where the .mat files are stored.
-#             label_type (str): One of 'GT', 'THb', or 'SO2'.
-#             transform: Optional torchvision transform or custom function applied to image.
-#         """
-#         self.data = pd.read_csv(csv_path)
-#         self.root_dir = mat_root_dir
-#         self.label_type = label_type
-#         self.transform = train_transform if phase == 'train' else val_transform
+train_transform_SO2 = A.Compose([
+    # Resize with ratio range
+	A.Resize(height=448, width=448, always_apply=True),
+	A.ElasticTransform(alpha = 10, sigma = 250, p=0.5),
+    A.GridDistortion(distort_limit=(-0.2,0.2), p=0.5),
 
-#         assert self.label_type in ['GT', 'THb', 'SO2'], "Invalid label type!"
+    A.ShiftScaleRotate(shift_limit=(-0.005,0.005), scale_limit=(-0.2, 0.005), rotate_limit=(-30,30), border_mode=0, value=0, p=0.6),
 
-#     def __len__(self):
-#         return len(self.data)
+	#A.RandomResizedCrop(size=(384, 384), scale=(0.9, 1.0), ratio=(0.9, 1.1), p=1.0),
+	A.RandomResizedCrop(size=(384, 384), scale=(0.8, 1.0), ratio=(0.75, 1.33), p=1.0),
 
-#     def __getitem__(self, idx):
-#         row = self.data.iloc[idx]
-#         mat_path = os.path.join(self.root_dir, row['Filename'])
+    # Horizontal flip
+    A.HorizontalFlip(p=0.5),
 
-#         # Load .mat file
-#         mat_contents = loadmat(mat_path)
-#         img = mat_contents['img'].astype(np.float32)
+    # Normalize using paper settings (converted to single-channel equivalent)
+    A.Normalize(mean=(0.5,), std=(0.5,), max_pixel_value=1.0),  # Adapted for grayscale
+    #A.Normalize(mean=(0.0002,), std=(0.0004,), max_pixel_value=0.0272),  # Adapted for grayscale
 
-#         # If grayscale image (H, W), expand to (H, W, 1)
-#         if img.ndim == 2:
-#             img = np.expand_dims(img, axis=-1)
-#         elif img.ndim == 3 and img.shape[0] in [1, 3]:
-#             img = np.transpose(img, (1, 2, 0))  # Make (H, W, C) if needed
+    # Ensure padding to crop size
+    A.PadIfNeeded(min_height=384, min_width=384, border_mode=0, value=0, p=1.0),
 
-#         # Apply Albumentations transform (expects NumPy array)
-#         if self.transform:
-#             img_transformed = self.transform(image=img)
-#             img_tensor = img_transformed['image']
-#         else:
-#             img_tensor = torch.from_numpy(np.transpose(img, (2, 0, 1)))  # To (C, H, W)
+    ToTensorV2()
+])
 
-#         # Extract label (binary classification or regression)
-#         label_value = row[self.label_type]
-#         label = torch.tensor(int(label_value < 1), dtype=torch.float32)  # binary
 
-#         return img_tensor, label
+val_transform_SO2 = A.Compose([
+    A.Resize(448, 448, p=1.0), 
+    A.Normalize(mean=(0.5,), std=(0.5,), max_pixel_value=1.0), 
+    #A.Normalize(mean=(0.0002,), std=(0.0004,), max_pixel_value=0.0272),  # Adapted for grayscale
+    ToTensorV2()
+])
+
+
 
 class ROIMatDataset(Dataset):
     def __init__(self, 
                  csv_path, 
                  mat_root_dir, 
-                 label_type='GT', 
+                 label_type='SO2', # SO2 or GT  #or Both 
                  phase='train',  # 'train', 'val', 'test'
                  k_fold=5, 
                  fold=0):
@@ -114,7 +90,7 @@ class ROIMatDataset(Dataset):
         self.label_type = label_type
         self.root_dir = mat_root_dir
 
-        assert self.label_type in ['GT', 'THb', 'SO2'], "Invalid label type!"
+        assert self.label_type in ['Both', 'THb', 'SO2'], "Invalid label type!"
 
         # Load CSV
         df = pd.read_csv(csv_path)
@@ -137,7 +113,7 @@ class ROIMatDataset(Dataset):
         # === Phase selection logic ===
         if phase == "test":
             selected_cases = test_case_set
-            self.transform = val_transform
+            self.transform = val_transform_SO2 if label_type == 'SO2' else val_transform_THB
         else:
             strat_case_ids = [cid for cid in case_ids if cid not in test_case_set]
             strat_case_labels = [label_map[cid] for cid in strat_case_ids]
@@ -147,10 +123,10 @@ class ROIMatDataset(Dataset):
 
             if phase == "train":
                 selected_cases = set(strat_case_ids[i] for i in train_idx)
-                self.transform = train_transform
+                self.transform = train_transform_SO2 if label_type == 'SO2' else train_transform_THB
             else:
                 selected_cases = set(strat_case_ids[i] for i in val_idx)
-                self.transform = val_transform
+                self.transform = val_transform_SO2 if label_type == 'SO2' else val_transform_THB
 
         # === Filter and build dataset ===
         selected_df = df[df["PatientSide"].isin(selected_cases)]
@@ -161,11 +137,11 @@ class ROIMatDataset(Dataset):
             if not os.path.exists(mat_path):
                 continue
 
-            label = row[label_type]
+            #label = row[label_type]
             gt_binary = int(row["GT"])  # use GT for stratification
             self.data.append({
                 "mat_path": mat_path,
-                "label": label,
+                #"label": label,
                 "gt_binary": gt_binary
             })
 
@@ -206,7 +182,7 @@ if __name__ == "__main__":
     dataset = ROIMatDataset(
         csv_path='PAT features/roi_so2_image_metadata.csv',
         mat_root_dir='PAT features/ROI_MAT',
-        label_type='GT',
+        label_type='SO2',
         phase='val',  # 'train', 'val', 'test'
         k_fold=5,
         fold=3

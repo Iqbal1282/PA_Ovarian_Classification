@@ -1,0 +1,16 @@
+{"time":"2025-08-06T16:23:39.8321203-05:00","level":"INFO","msg":"stream: starting","core version":"0.19.7","symlink path":"C:\\Users\\mdiqb\\Desktop\\Ovarian_Cancer\\codebase\\codebase_wash2_pa_reviewed_data\\wandb\\run-20250806_162339-leqo72sl\\logs\\debug-core.log"}
+{"time":"2025-08-06T16:23:39.9395783-05:00","level":"INFO","msg":"created new stream","id":"leqo72sl"}
+{"time":"2025-08-06T16:23:39.9395783-05:00","level":"INFO","msg":"stream: started","id":"leqo72sl"}
+{"time":"2025-08-06T16:23:39.9395783-05:00","level":"INFO","msg":"sender: started","stream_id":"leqo72sl"}
+{"time":"2025-08-06T16:23:39.9395783-05:00","level":"INFO","msg":"handler: started","stream_id":"leqo72sl"}
+{"time":"2025-08-06T16:23:39.9395783-05:00","level":"INFO","msg":"writer: Do: started","stream_id":"leqo72sl"}
+{"time":"2025-08-06T16:23:40.1289166-05:00","level":"INFO","msg":"Starting system monitor"}
+{"time":"2025-08-06T16:23:56.7327085-05:00","level":"INFO","msg":"Stopping system monitor"}
+{"time":"2025-08-06T16:23:56.7342949-05:00","level":"INFO","msg":"Stopped system monitor"}
+{"time":"2025-08-06T16:23:57.1932281-05:00","level":"INFO","msg":"fileTransfer: Close: file transfer manager closed"}
+{"time":"2025-08-06T16:23:57.3152285-05:00","level":"INFO","msg":"handler: operation stats","stats":{}}
+{"time":"2025-08-06T16:23:58.3309732-05:00","level":"INFO","msg":"stream: closing","id":"leqo72sl"}
+{"time":"2025-08-06T16:23:58.3309732-05:00","level":"INFO","msg":"handler: closed","stream_id":"leqo72sl"}
+{"time":"2025-08-06T16:23:58.3309732-05:00","level":"INFO","msg":"writer: Close: closed","stream_id":"leqo72sl"}
+{"time":"2025-08-06T16:23:58.3315754-05:00","level":"INFO","msg":"sender: closed","stream_id":"leqo72sl"}
+{"time":"2025-08-06T16:23:58.3315754-05:00","level":"INFO","msg":"stream: closed","id":"leqo72sl"}
