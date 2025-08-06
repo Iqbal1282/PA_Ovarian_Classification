@@ -1,0 +1,16 @@
+{"time":"2025-08-06T16:03:04.6064245-05:00","level":"INFO","msg":"stream: starting","core version":"0.19.7","symlink path":"C:\\Users\\mdiqb\\Desktop\\Ovarian_Cancer\\codebase\\codebase_wash2_pa_reviewed_data\\wandb\\run-20250806_160304-ygpjysyx\\logs\\debug-core.log"}
+{"time":"2025-08-06T16:03:04.712037-05:00","level":"INFO","msg":"created new stream","id":"ygpjysyx"}
+{"time":"2025-08-06T16:03:04.712037-05:00","level":"INFO","msg":"stream: started","id":"ygpjysyx"}
+{"time":"2025-08-06T16:03:04.712037-05:00","level":"INFO","msg":"writer: Do: started","stream_id":"ygpjysyx"}
+{"time":"2025-08-06T16:03:04.712037-05:00","level":"INFO","msg":"handler: started","stream_id":"ygpjysyx"}
+{"time":"2025-08-06T16:03:04.712037-05:00","level":"INFO","msg":"sender: started","stream_id":"ygpjysyx"}
+{"time":"2025-08-06T16:03:04.8950683-05:00","level":"INFO","msg":"Starting system monitor"}
+{"time":"2025-08-06T16:03:18.0520139-05:00","level":"INFO","msg":"Stopping system monitor"}
+{"time":"2025-08-06T16:03:18.0523434-05:00","level":"INFO","msg":"Stopped system monitor"}
+{"time":"2025-08-06T16:03:18.4649542-05:00","level":"INFO","msg":"fileTransfer: Close: file transfer manager closed"}
+{"time":"2025-08-06T16:03:18.5802381-05:00","level":"INFO","msg":"handler: operation stats","stats":{}}
+{"time":"2025-08-06T16:03:19.5951236-05:00","level":"INFO","msg":"stream: closing","id":"ygpjysyx"}
+{"time":"2025-08-06T16:03:19.5951236-05:00","level":"INFO","msg":"handler: closed","stream_id":"ygpjysyx"}
+{"time":"2025-08-06T16:03:19.5951236-05:00","level":"INFO","msg":"writer: Close: closed","stream_id":"ygpjysyx"}
+{"time":"2025-08-06T16:03:19.5951236-05:00","level":"INFO","msg":"sender: closed","stream_id":"ygpjysyx"}
+{"time":"2025-08-06T16:03:19.5951236-05:00","level":"INFO","msg":"stream: closed","id":"ygpjysyx"}

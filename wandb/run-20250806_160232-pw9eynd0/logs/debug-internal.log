@@ -1,0 +1,16 @@
+{"time":"2025-08-06T16:02:32.8166536-05:00","level":"INFO","msg":"stream: starting","core version":"0.19.7","symlink path":"C:\\Users\\mdiqb\\Desktop\\Ovarian_Cancer\\codebase\\codebase_wash2_pa_reviewed_data\\wandb\\run-20250806_160232-pw9eynd0\\logs\\debug-core.log"}
+{"time":"2025-08-06T16:02:32.9230021-05:00","level":"INFO","msg":"created new stream","id":"pw9eynd0"}
+{"time":"2025-08-06T16:02:32.9230021-05:00","level":"INFO","msg":"stream: started","id":"pw9eynd0"}
+{"time":"2025-08-06T16:02:32.9230021-05:00","level":"INFO","msg":"handler: started","stream_id":"pw9eynd0"}
+{"time":"2025-08-06T16:02:32.9230021-05:00","level":"INFO","msg":"sender: started","stream_id":"pw9eynd0"}
+{"time":"2025-08-06T16:02:32.9230021-05:00","level":"INFO","msg":"writer: Do: started","stream_id":"pw9eynd0"}
+{"time":"2025-08-06T16:02:33.0892252-05:00","level":"INFO","msg":"Starting system monitor"}
+{"time":"2025-08-06T16:02:47.1507667-05:00","level":"INFO","msg":"Stopping system monitor"}
+{"time":"2025-08-06T16:02:47.1507667-05:00","level":"INFO","msg":"Stopped system monitor"}
+{"time":"2025-08-06T16:02:47.4797215-05:00","level":"INFO","msg":"fileTransfer: Close: file transfer manager closed"}
+{"time":"2025-08-06T16:02:47.618205-05:00","level":"INFO","msg":"handler: operation stats","stats":{}}
+{"time":"2025-08-06T16:02:48.6312343-05:00","level":"INFO","msg":"stream: closing","id":"pw9eynd0"}
+{"time":"2025-08-06T16:02:48.6312343-05:00","level":"INFO","msg":"handler: closed","stream_id":"pw9eynd0"}
+{"time":"2025-08-06T16:02:48.6312343-05:00","level":"INFO","msg":"writer: Close: closed","stream_id":"pw9eynd0"}
+{"time":"2025-08-06T16:02:48.6312343-05:00","level":"INFO","msg":"sender: closed","stream_id":"pw9eynd0"}
+{"time":"2025-08-06T16:02:48.6312343-05:00","level":"INFO","msg":"stream: closed","id":"pw9eynd0"}

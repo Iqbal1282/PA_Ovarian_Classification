@@ -190,7 +190,7 @@ class ROIMatDataset(Dataset):
         transformed = self.transform(image=img)
         img_tensor = transformed['image']
 
-        label = torch.tensor(item["gt_binary"], dtype=torch.float32)
+        label = torch.tensor([item["gt_binary"]], dtype=torch.float32)
 
         return img_tensor, label
     

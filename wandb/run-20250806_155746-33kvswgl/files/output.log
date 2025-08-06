@@ -1,0 +1,35 @@
+Traceback (most recent call last):                                                                                               
+  File "c:\Users\mdiqb\Desktop\Ovarian_Cancer\codebase\codebase_wash2_pa_reviewed_data\train.py", line 121, in <module>
+    loss = model.compute_loss(x.to(device), y.to(device))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\mdiqb\Desktop\Ovarian_Cancer\codebase\codebase_wash2_pa_reviewed_data\fusion_models.py", line 289, in compute_loss
+    score = self.forward(x)
+            ^^^^^^^^^^^^^^^
+  File "c:\Users\mdiqb\Desktop\Ovarian_Cancer\codebase\codebase_wash2_pa_reviewed_data\fusion_models.py", line 280, in forward
+    x = self.backbone(x)
+        ^^^^^^^^^^^^^^^^
+  File "C:\Users\mdiqb\anaconda3\envs\py312\Lib\site-packages\torch\nn\modules\module.py", line 1739, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\mdiqb\anaconda3\envs\py312\Lib\site-packages\torch\nn\modules\module.py", line 1750, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\mdiqb\anaconda3\envs\py312\Lib\site-packages\timm\models\resnet.py", line 636, in forward
+    x = self.forward_features(x)
+        ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\mdiqb\anaconda3\envs\py312\Lib\site-packages\timm\models\resnet.py", line 615, in forward_features
+    x = self.conv1(x)
+        ^^^^^^^^^^^^^
+  File "C:\Users\mdiqb\anaconda3\envs\py312\Lib\site-packages\torch\nn\modules\module.py", line 1739, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\mdiqb\anaconda3\envs\py312\Lib\site-packages\torch\nn\modules\module.py", line 1750, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\mdiqb\anaconda3\envs\py312\Lib\site-packages\torch\nn\modules\conv.py", line 554, in forward
+    return self._conv_forward(input, self.weight, self.bias)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\mdiqb\anaconda3\envs\py312\Lib\site-packages\torch\nn\modules\conv.py", line 549, in _conv_forward
+    return F.conv2d(
+           ^^^^^^^^^
+RuntimeError: Given groups=1, weight of size [64, 3, 7, 7], expected input[16, 1, 384, 384] to have 3 channels, but got 1 channels instead

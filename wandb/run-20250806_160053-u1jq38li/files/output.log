@@ -1,0 +1,19 @@
+Traceback (most recent call last):                                                                                               
+  File "c:\Users\mdiqb\Desktop\Ovarian_Cancer\codebase\codebase_wash2_pa_reviewed_data\train.py", line 121, in <module>
+    loss = model.compute_loss(x.to(device), y.to(device))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\mdiqb\Desktop\Ovarian_Cancer\codebase\codebase_wash2_pa_reviewed_data\fusion_models.py", line 292, in compute_loss
+    loss = self.loss_fn(score, y) #+ 0.5 * self.loss_fn2(score, y)
+           ^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\mdiqb\anaconda3\envs\py312\Lib\site-packages\torch\nn\modules\module.py", line 1739, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\mdiqb\anaconda3\envs\py312\Lib\site-packages\torch\nn\modules\module.py", line 1750, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\mdiqb\anaconda3\envs\py312\Lib\site-packages\torch\nn\modules\loss.py", line 821, in forward
+    return F.binary_cross_entropy_with_logits(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\mdiqb\anaconda3\envs\py312\Lib\site-packages\torch\nn\functional.py", line 3639, in binary_cross_entropy_with_logits
+    raise ValueError(
+ValueError: Target size (torch.Size([16])) must be the same as input size (torch.Size([16, 1]))

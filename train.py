@@ -20,7 +20,7 @@ SEED = 42
 np.random.seed(SEED); torch.manual_seed(SEED); random.seed(SEED)
 
 # Settings
-max_epochs = 100
+max_epochs = 2
 batch_size = 16
 k_fold = 5
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -62,7 +62,7 @@ for fold in range(k_fold):
     # test_dataset = Classificaiton_Dataset(phase='test', radiomics_dir=False)
 
     train_dataset = ROIMatDataset(
-        csv_path='PAT features/roi_so2_image_metadata.csv',
+        csv_path='PAT features/roi_thb_image_metadata.csv',
         mat_root_dir='PAT features/ROI_MAT',
         label_type='GT',
         phase='train',  # 'train', 'val', 'test'
@@ -71,7 +71,7 @@ for fold in range(k_fold):
     )
 
     val_dataset = ROIMatDataset(
-        csv_path='PAT features/roi_so2_image_metadata.csv', 
+        csv_path='PAT features/roi_thb_image_metadata.csv', 
         mat_root_dir='PAT features/ROI_MAT',
         label_type='GT',
         phase='val',  # 'train', 'val', 'test'
@@ -79,7 +79,7 @@ for fold in range(k_fold):
         fold=fold
     )
     test_dataset = ROIMatDataset(
-        csv_path='PAT features/roi_so2_image_metadata.csv',     
+        csv_path='PAT features/roi_thb_image_metadata.csv',     
         mat_root_dir='PAT features/ROI_MAT',
         label_type='GT',
         phase='test',  # 'train', 'val', 'test'
