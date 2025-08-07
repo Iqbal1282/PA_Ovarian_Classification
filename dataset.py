@@ -31,7 +31,7 @@ train_transform_THB = A.Compose([
     A.Normalize(mean=(0.0002,), std=(0.0004,), max_pixel_value=0.0272),  # Adapted for grayscale
 
     # Ensure padding to crop size
-    A.PadIfNeeded(min_height=384, min_width=384, border_mode=0, value=0, p=1.0),
+    #A.PadIfNeeded(min_height=384, min_width=384, border_mode=0, value=0, p=1.0),
 
     ToTensorV2()
 ])
@@ -64,7 +64,7 @@ train_transform_SO2 = A.Compose([
     #A.Normalize(mean=(0.0002,), std=(0.0004,), max_pixel_value=0.0272),  # Adapted for grayscale
 
     # Ensure padding to crop size
-    A.PadIfNeeded(min_height=384, min_width=384, border_mode=0, value=0, p=1.0),
+    #A.PadIfNeeded(min_height=384, min_width=384, border_mode=0, value=0, p=1.0),
 
     ToTensorV2()
 ])

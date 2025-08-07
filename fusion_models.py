@@ -464,6 +464,8 @@ class MultiModalTransformerClassifier(nn.Module):
             nn.Linear(embed_dim, num_classes)
         )
 
+        self.loss_fn = nn.BCEWithLogitsLoss(pos_weight=torch.tensor([3.0]))
+
     def forward(self, x):  #so2, thb): #, us):
         so2, thb = x[0], x[1]
         B = so2.size(0)
