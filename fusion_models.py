@@ -125,9 +125,9 @@ class AttentionFusion(nn.Module):
 
 
 class MultiModalCancerClassifierWithAttention(nn.Module):
-    def __init__(self, out_dim=1, fusion_dim=None, backbone_name='resnet18', dropout_prob=0.0, use_layernorm=True):
+    def __init__(self, out_dim=1, fusion_dim=None, backbone_name='resnet18', dropout_prob=0.0, use_layernorm=True, num_modalities=3):
         super().__init__()
-        self.num_modalities = 3
+        self.num_modalities = num_modalities
         self.dropout_prob = dropout_prob
         self.use_layernorm = use_layernorm
 
@@ -191,6 +191,41 @@ class MultiModalCancerClassifierWithAttention(nn.Module):
         fused_output = self.attn_fusion(fused_stack)   # (B, fusion_dim)
         out = self.classifier(fused_output)            # (B, out_dim)
         return out
+    
+    def compute_loss(self, x, y, x2_rad=None):
+        y = y.float()  # Ensure targets are float for BCE loss
+        if x2_rad is not None:
+            score, tails = self.forward(x, x2_rad)
+            loss = self.loss_fn(score, y) + sum(self.loss_fn(t, y) for t in tails)
+        else:
+            score = self.forward(x)
+            loss = self.loss_fn(score, y) #+ 0.5 * self.loss_fn2(score, y)
+
+        return loss
+
+    def predict_on_loader(self, dataloader, threshold=0.5):
+        self.eval()
+        all_probs, all_targets = [], []
+
+        device = next(self.parameters()).device
+
+        with torch.no_grad():
+            for batch in dataloader:
+                if len(batch) == 2:
+                    x, y = batch
+                    x, y = x.to(device), y.to(device)
+                    scores = self.forward(x)
+                else:
+                    x, x2, y = batch
+                    x, x2, y = x.to(device), x2.to(device), y.to(device)
+                    scores = self.forward([x, x2])
+
+                probs = torch.sigmoid(scores)
+                all_probs.append(probs.cpu())
+                all_targets.append(y.cpu())
+
+        return torch.cat(all_targets).numpy(), torch.cat(all_probs).numpy()
+    
 
 
 class MultiClassificationTorch(nn.Module): 
@@ -397,25 +432,14 @@ class BinaryClassificationTorch(nn.Module):
 
 
 if __name__ == "__main__":
-    # model = MultiModalCancerClassifierWithAttention()
-    # img1 = torch.randn(8, 1, 256, 256)
-    # img2 = torch.randn(8, 1, 256, 256)
-    # img3 = torch.randn(8, 1, 256, 256)
-    # img4 = torch.randn(8, 1, 256, 256)
+    model = MultiModalCancerClassifierWithAttention(num_modalities=2, out_dim=1, fusion_dim=64, backbone_name='resnet18', dropout_prob=0.0)
+    img1 = torch.randn(8, 1, 256, 256)
+    img2 = torch.randn(8, 1, 256, 256)
+    img3 = torch.randn(8, 1, 256, 256)
+    img4 = torch.randn(8, 1, 256, 256)
 
-    # output = model([img1, img2, img3]) #, img4])  # shape: (8,)
+    output = model([img1, img2]) #, img4])  # shape: (8,)
 
-    # print(output)
+    print(output.shape)  # Should print torch.Size([8, 1])
 
 
-
-    model = MultiClassificationTorch(input_dim= 64, num_classes= 8,  
-                                 encoder_weight_path = r"checkpoints\normtverskyloss_binary_segmentation\a56e77a\best-checkpoint-epoch=77-validation\loss=0.2544.ckpt", 
-                                 sdf_model_path= r"checkpoints\deeplabv3_sdf_randomcrop\model_20250711_201243\epoch_84",
-                                 radiomics= False)
-    
-    #model = MultiClassificationTorch_Imagenet()
-
-    print(model)
-    model.eval()
-    print(model(torch.randn(1, 3,384, 384))) #, torch.randn(1, 1,256, 256)).shape)
