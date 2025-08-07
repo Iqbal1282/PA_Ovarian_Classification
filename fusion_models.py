@@ -166,6 +166,8 @@ class MultiModalCancerClassifierWithAttention(nn.Module):
             nn.Linear(128, out_dim)
         )
 
+        self.loss_fn = nn.BCEWithLogitsLoss(pos_weight=torch.tensor([3.0] * out_dim))
+
     def forward(self, imgs):  # imgs: list of 3 tensors
         B = imgs[0].shape[0]
         device = imgs[0].device

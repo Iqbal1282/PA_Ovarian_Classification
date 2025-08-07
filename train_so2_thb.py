@@ -10,7 +10,7 @@ from datetime import datetime
 from sklearn.metrics import roc_curve, auc
 from torch.utils.data import DataLoader
 from fusion_models import MultiClassificationTorch_Imagenet, MultiModalCancerClassifierWithAttention
-from dataset import ROIMatDataset  # Adjusted import based on the context
+from dataset import ROIMatDataset, PairedROIMatDataset  # Adjusted import based on the context
 from utils import plot_roc_curve, compute_weighted_accuracy, calculate_auc
 from tqdm import tqdm 
 from torchmetrics.classification import BinaryAccuracy, BinaryAUROC
@@ -61,30 +61,32 @@ for fold in range(k_fold):
     # val_dataset = Classificaiton_Dataset(phase='val', k_fold=k_fold, fold=fold, radiomics_dir=False)
     # test_dataset = Classificaiton_Dataset(phase='test', radiomics_dir=False)
 
-    train_dataset = ROIMatDataset(
-        csv_path='PAT features/roi_so2_image_metadata.csv',
+    train_dataset = PairedROIMatDataset(
+        so2_csv_path ='PAT features/roi_so2_image_metadata.csv',
+        thb_csv_path= 'PAT features/roi_thb_image_metadata.csv',
         mat_root_dir='PAT features/ROI_MAT',
-        label_type='SO2',
-        phase='train',  # 'train', 'val', 'test'
+        phase='train',
+        k_fold=5,
+        fold=fold 
+    )
+
+
+    val_dataset = PairedROIMatDataset(
+        so2_csv_path ='PAT features/roi_so2_image_metadata.csv',
+        thb_csv_path= 'PAT features/roi_thb_image_metadata.csv',
+        mat_root_dir='PAT features/ROI_MAT',
+        phase='va',
         k_fold=5,
         fold=fold
     )
 
-    val_dataset = ROIMatDataset(
-        csv_path='PAT features/roi_so2_image_metadata.csv', 
+    test_dataset = PairedROIMatDataset(
+        so2_csv_path ='PAT features/roi_so2_image_metadata.csv',
+        thb_csv_path= 'PAT features/roi_thb_image_metadata.csv',
         mat_root_dir='PAT features/ROI_MAT',
-        label_type='SO2',
-        phase='val',  # 'train', 'val', 'test'
+        phase='test',
         k_fold=5,
-        fold=fold
-    )
-    test_dataset = ROIMatDataset(
-        csv_path='PAT features/roi_so2_image_metadata.csv',     
-        mat_root_dir='PAT features/ROI_MAT',
-        label_type='SO2',
-        phase='test',  # 'train', 'val', 'test'
-        k_fold=5,
-        fold=fold
+        fold=0
     )
 
 
