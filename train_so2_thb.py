@@ -98,7 +98,7 @@ for fold in range(k_fold):
     # Model
     #model = MultiClassificationTorch_Imagenet(num_classes= 1, backbone_name= 'resnet18').to(device)
     #model = MultiModalCancerClassifierWithAttention(num_modalities=2, out_dim=1, fusion_dim=64, backbone_name='resnet18', dropout_prob=0.3).to(device)
-    model = MultiModalTransformerClassifier(num_classes=1, img_size = 448, patch_size= 32).to(device) #)
+    model = MultiModalTransformerClassifier(num_classes=1, img_size = 448, patch_size= 64).to(device) #)
     #optimizer = torch.optim.Adam(model.parameters(), lr=5e-5, weight_decay=1e-5)
     optimizer = torch.optim.AdamW(model.parameters(), lr=5e-4, weight_decay=1e-2)
     scheduler = ExponentialLR(optimizer=optimizer, gamma=0.9) #CosineAnnealingWarmRestarts(optimizer, T_0=10, T_mult=2, eta_min=1e-6)

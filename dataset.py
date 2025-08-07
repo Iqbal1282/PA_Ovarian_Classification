@@ -48,7 +48,7 @@ val_transform_THB = A.Compose([
 train_transform_SO2 = A.Compose([
     # Resize with ratio range
 	A.Resize(height=img_size, width=img_size, always_apply=True),
-	A.ElasticTransform(alpha = 10, sigma = 250, p=0.5),
+	A.ElasticTransform(alpha = 1, sigma = 250, p=0.5),
     A.GridDistortion(distort_limit=(-0.2,0.2), p=0.5),
 
     A.ShiftScaleRotate(shift_limit=(-0.005,0.005), scale_limit=(-0.2, 0.005), rotate_limit=(-30,30), border_mode=0, value=0, p=0.6),
