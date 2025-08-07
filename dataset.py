@@ -10,12 +10,12 @@ from albumentations.pytorch import ToTensorV2
 import matplotlib.pyplot as plt
 
 
-img_size = 64 
+img_size = 448
 
 train_transform_THB = A.Compose([
     # Resize with ratio range
 	A.Resize(height=img_size, width=img_size, always_apply=True),
-	A.ElasticTransform(alpha = 10, sigma = 250, p=0.5),
+	A.ElasticTransform(alpha = 1, sigma = 250, p=0.5),
     A.GridDistortion(distort_limit=(-0.2,0.2), p=0.5),
 
     A.ShiftScaleRotate(shift_limit=(-0.005,0.005), scale_limit=(-0.2, 0.005), rotate_limit=(-30,30), border_mode=0, value=0, p=0.6),
@@ -389,7 +389,7 @@ if __name__ == "__main__":
         fold=0
     )
 
-    loader = DataLoader(dataset, batch_size=1, shuffle=True)
+    loader = DataLoader(dataset, batch_size=5, shuffle=True)
 
     # Sample batch
     for images, image2, labels in loader:
@@ -399,7 +399,7 @@ if __name__ == "__main__":
 		#plt.subplot(1,3,1)
         plt.imshow(images[0][0], cmap= 'gray')
         plt.show()
-        break
+        #break
 
 
     Malignant_count = 0 

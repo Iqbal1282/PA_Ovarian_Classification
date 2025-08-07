@@ -434,7 +434,7 @@ class BinaryClassificationTorch(nn.Module):
     
 
 class MultiModalTransformerClassifier(nn.Module):
-    def __init__(self, img_size=64, patch_size=8, embed_dim=256, num_heads=4, num_layers=6, num_classes=8):
+    def __init__(self, img_size=448, patch_size=32, embed_dim=256, num_heads=4, num_layers=6, num_classes=8):
         super().__init__()
         
         self.patch_dim = (img_size // patch_size) ** 2
