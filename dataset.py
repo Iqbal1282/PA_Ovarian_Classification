@@ -10,16 +10,18 @@ from albumentations.pytorch import ToTensorV2
 import matplotlib.pyplot as plt
 
 
+img_size = 64 
+
 train_transform_THB = A.Compose([
     # Resize with ratio range
-	A.Resize(height=448, width=448, always_apply=True),
+	A.Resize(height=img_size, width=img_size, always_apply=True),
 	A.ElasticTransform(alpha = 10, sigma = 250, p=0.5),
     A.GridDistortion(distort_limit=(-0.2,0.2), p=0.5),
 
     A.ShiftScaleRotate(shift_limit=(-0.005,0.005), scale_limit=(-0.2, 0.005), rotate_limit=(-30,30), border_mode=0, value=0, p=0.6),
 
 	#A.RandomResizedCrop(size=(384, 384), scale=(0.9, 1.0), ratio=(0.9, 1.1), p=1.0),
-	A.RandomResizedCrop(size=(384, 384), scale=(0.8, 1.0), ratio=(0.75, 1.33), p=1.0),
+	A.RandomResizedCrop(size=(img_size, img_size), scale=(0.8, 1.0), ratio=(0.75, 1.33), p=1.0),
 
     # Horizontal flip
     A.HorizontalFlip(p=0.5),
@@ -36,7 +38,7 @@ train_transform_THB = A.Compose([
 
 
 val_transform_THB = A.Compose([
-    A.Resize(448, 448, p=1.0), 
+    A.Resize(img_size, img_size, p=1.0), 
     #A.Normalize(mean=(0.5,), std=(0.5,), max_pixel_value=1.0), 
     A.Normalize(mean=(0.0002,), std=(0.0004,), max_pixel_value=0.0272),  # Adapted for grayscale
     ToTensorV2()
@@ -45,14 +47,14 @@ val_transform_THB = A.Compose([
 
 train_transform_SO2 = A.Compose([
     # Resize with ratio range
-	A.Resize(height=448, width=448, always_apply=True),
+	A.Resize(height=img_size, width=img_size, always_apply=True),
 	A.ElasticTransform(alpha = 10, sigma = 250, p=0.5),
     A.GridDistortion(distort_limit=(-0.2,0.2), p=0.5),
 
     A.ShiftScaleRotate(shift_limit=(-0.005,0.005), scale_limit=(-0.2, 0.005), rotate_limit=(-30,30), border_mode=0, value=0, p=0.6),
 
 	#A.RandomResizedCrop(size=(384, 384), scale=(0.9, 1.0), ratio=(0.9, 1.1), p=1.0),
-	A.RandomResizedCrop(size=(384, 384), scale=(0.8, 1.0), ratio=(0.75, 1.33), p=1.0),
+	A.RandomResizedCrop(size=(img_size, img_size), scale=(0.8, 1.0), ratio=(0.75, 1.33), p=1.0),
 
     # Horizontal flip
     A.HorizontalFlip(p=0.5),
@@ -69,7 +71,7 @@ train_transform_SO2 = A.Compose([
 
 
 val_transform_SO2 = A.Compose([
-    A.Resize(448, 448, p=1.0), 
+    A.Resize(img_size, img_size, p=1.0), 
     A.Normalize(mean=(0.5,), std=(0.5,), max_pixel_value=1.0), 
     #A.Normalize(mean=(0.0002,), std=(0.0004,), max_pixel_value=0.0272),  # Adapted for grayscale
     ToTensorV2()
