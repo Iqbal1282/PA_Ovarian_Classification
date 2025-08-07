@@ -125,10 +125,11 @@ for fold in range(k_fold):
             loss.backward()
             optimizer.step()
             optimizer.step()
-            scheduler.step(epoch + batch_idx / len(train_loader))
+            #scheduler.step(epoch + batch_idx / len(train_loader))
             epoch_loss += loss.item()
 
         avg_train_loss = epoch_loss / len(train_loader)
+        scheduler.step()
         wandb.log({f"train/loss_fold_{fold}": avg_train_loss, "epoch": epoch})
         current_lr = scheduler.get_last_lr()[0]
         wandb.log({f"train/lr_fold_{fold}": current_lr, "epoch": epoch})
