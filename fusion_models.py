@@ -177,7 +177,7 @@ class MultiModalCancerClassifierWithAttention(nn.Module):
             x = imgs[i]
 
             # Modality dropout
-            if self.training and random.random() < self.dropout_prob and i != 0:
+            if self.training and random.random() < self.dropout_prob :
                 fused_feats.append(torch.zeros(B, self.projs[i][0].out_features, device=device))
                 continue
 
