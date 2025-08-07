@@ -14,7 +14,7 @@ from dataset import ROIMatDataset  # Adjusted import based on the context
 from utils import plot_roc_curve, compute_weighted_accuracy, calculate_auc
 from tqdm import tqdm 
 from torchmetrics.classification import BinaryAccuracy, BinaryAUROC
-from torch.optim.lr_scheduler import CosineAnnealingWarmRestarts
+from torch.optim.lr_scheduler import CosineAnnealingWarmRestarts, CosineAnnealingLR, StepLR, ReduceLROnPlateau, ExponentialLR
 # Set deterministic behavior
 SEED = 42
 np.random.seed(SEED); torch.manual_seed(SEED); random.seed(SEED)
@@ -98,7 +98,7 @@ for fold in range(k_fold):
 
     #optimizer = torch.optim.Adam(model.parameters(), lr=5e-5, weight_decay=1e-5)
     optimizer = torch.optim.AdamW(model.parameters(), lr=5e-4, weight_decay=1e-2)
-    scheduler = CosineAnnealingWarmRestarts(optimizer, T_0=10, T_mult=2, eta_min=1e-6)
+    scheduler = ExponentialLR(optimizer=optimizer, gamma=0.9) #CosineAnnealingWarmRestarts(optimizer, T_0=10, T_mult=2, eta_min=1e-6)
 
     best_val_auc = -1
     best_combined_score = -1 
