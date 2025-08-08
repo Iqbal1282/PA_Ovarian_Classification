@@ -98,10 +98,11 @@ for fold in range(k_fold):
     # Model
     #model = MultiClassificationTorch_Imagenet(num_classes= 1, backbone_name= 'resnet18').to(device)
     #model = MultiModalCancerClassifierWithAttention(num_modalities=2, out_dim=1, fusion_dim=64, backbone_name='resnet18', dropout_prob=0.3).to(device)
-    model = MultiModalTransformerClassifier(num_classes=1, img_size = 448, patch_size= 64).to(device) #)
+    model = MultiModalTransformerClassifier(num_classes=1, img_size = 448, patch_size= 32, num_layers = 4).to(device) #)
     #optimizer = torch.optim.Adam(model.parameters(), lr=5e-5, weight_decay=1e-5)
-    optimizer = torch.optim.AdamW(model.parameters(), lr=5e-4, weight_decay=1e-2)
-    scheduler = ExponentialLR(optimizer=optimizer, gamma=0.9) #CosineAnnealingWarmRestarts(optimizer, T_0=10, T_mult=2, eta_min=1e-6)
+    optimizer = torch.optim.AdamW(model.parameters(), lr=5e-6, weight_decay=1e-2)
+    #scheduler = ExponentialLR(optimizer=optimizer, gamma=0.9) #
+    scheduler = CosineAnnealingWarmRestarts(optimizer, T_0=10, T_mult=2, eta_min=1e-6)
 
     best_val_auc = -1
     best_combined_score = -1 
@@ -128,11 +129,11 @@ for fold in range(k_fold):
             loss.backward()
             optimizer.step()
             optimizer.step()
-            #scheduler.step(epoch + batch_idx / len(train_loader))
+            scheduler.step(epoch + batch_idx / len(train_loader))
             epoch_loss += loss.item()
 
         avg_train_loss = epoch_loss / len(train_loader)
-        scheduler.step()
+        #scheduler.step()
         wandb.log({f"train/loss_fold_{fold}": avg_train_loss, "epoch": epoch})
         current_lr = scheduler.get_last_lr()[0]
         wandb.log({f"train/lr_fold_{fold}": current_lr, "epoch": epoch})

@@ -443,7 +443,7 @@ class MultiModalTransformerClassifier(nn.Module):
         # Modality-specific CNNs (or lightweight ViTs if pretrained available)
         self.so2_cnn = nn.Conv2d(1, embed_dim, kernel_size=patch_size, stride=patch_size)
         self.thb_cnn = nn.Conv2d(1, embed_dim, kernel_size=patch_size, stride=patch_size)
-        self.us_cnn  = nn.Conv2d(1, embed_dim, kernel_size=patch_size, stride=patch_size)
+        #self.us_cnn  = nn.Conv2d(1, embed_dim, kernel_size=patch_size, stride=patch_size)
         
         # CLS token (shared)
         self.cls_token = nn.Parameter(torch.randn(1, 1, embed_dim))
