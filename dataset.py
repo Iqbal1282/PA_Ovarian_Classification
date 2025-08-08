@@ -360,7 +360,105 @@ class PairedROIMatDataset(Dataset):
         label = torch.tensor([item["gt_binary"]], dtype=torch.float32)
 
         return so2_img, thb_img, label
+    
 
+class MultimodalDatasetWithRadiomics(Dataset):
+    def __init__(self, so2_csv_path, thb_csv_path, mat_root_dir, phase='train', k_fold=5, fold=0):
+        self.phase = phase
+        self.root_dir = mat_root_dir
+
+        # Load CSVs
+        so2_df = pd.read_csv(so2_csv_path)
+        thb_df = pd.read_csv(thb_csv_path)
+
+        # Drop missing data
+        so2_df = so2_df.dropna(subset=["PatientID", "Side", "SO2"])
+        thb_df = thb_df.dropna(subset=["PatientID", "Side", "THb"])
+
+        # Convert IDs to int
+        so2_df["PatientID"] = so2_df["PatientID"].astype(int)
+        thb_df["PatientID"] = thb_df["PatientID"].astype(int)
+
+        # Create patient-side IDs
+        so2_df["PatientSide"] = so2_df.apply(lambda row: f"p{row['PatientID']}_{row['Side']}", axis=1)
+        thb_df["PatientSide"] = thb_df.apply(lambda row: f"p{row['PatientID']}_{row['Side']}", axis=1)
+
+        # Merge both on PatientSide
+        merged_df = pd.merge(so2_df, thb_df, on="PatientSide", suffixes=("_so2", "_thb"))
+
+        # Keep valid cases
+        merged_df = merged_df.dropna(subset=["Filename_so2", "Filename_thb", "GT_so2"])
+        merged_df["GT"] = (merged_df["GT_so2"] < 1).astype(int)
+
+        # Train/Test split
+        merged_df["IsTest"] = merged_df["PatientID_so2"] <= 60
+        test_case_set = set(merged_df[merged_df["IsTest"]]["PatientSide"].unique())
+
+        grouped_gt = merged_df.groupby("PatientSide")["GT"].agg(lambda x: x.mode()[0])
+        case_ids = grouped_gt.index.tolist()
+        case_labels = grouped_gt.values.tolist()
+        label_map = grouped_gt.to_dict()
+
+        if phase == "test":
+            selected_cases = test_case_set
+            self.transform_so2 = val_transform_SO2
+            self.transform_thb = val_transform_THB
+        else:
+            strat_case_ids = [cid for cid in case_ids if cid not in test_case_set]
+            strat_case_labels = [label_map[cid] for cid in strat_case_ids]
+            skf = StratifiedKFold(n_splits=k_fold, shuffle=True, random_state=42)
+            train_idx, val_idx = list(skf.split(strat_case_ids, strat_case_labels))[fold]
+
+            if phase == "train":
+                selected_cases = set(strat_case_ids[i] for i in train_idx)
+                self.transform_so2 = train_transform_SO2
+                self.transform_thb = train_transform_THB
+            else:
+                selected_cases = set(strat_case_ids[i] for i in val_idx)
+                self.transform_so2 = val_transform_SO2
+                self.transform_thb = val_transform_THB
+
+        selected_df = merged_df[merged_df["PatientSide"].isin(selected_cases)]
+
+        # Collect data items
+        self.data = []
+        for _, row in selected_df.iterrows():
+            so2_path = os.path.join(mat_root_dir, row["Filename_so2"])
+            thb_path = os.path.join(mat_root_dir, row["Filename_thb"])
+
+            if os.path.exists(so2_path) and os.path.exists(thb_path):
+                # Extract radiomic feature arrays (excluding meta columns)
+                so2_feats = row['SO2_so2'] #.astype(np.float32)
+                thb_feats = row['THb_thb'] #.astype(np.float32)
+
+
+                self.data.append({
+                    "so2_path": so2_path,
+                    "thb_path": thb_path,
+                    "so2_feats": so2_feats,
+                    "thb_feats": thb_feats,
+                    "gt_binary": int(row["GT"])
+                })
+
+    def __len__(self):
+        return len(self.data)
+
+    def __getitem__(self, idx):
+        item = self.data[idx]
+
+
+        so2_img = loadmat(item["so2_path"])['img'].astype(np.float32)
+        thb_img = loadmat(item["thb_path"])['img'].astype(np.float32)
+
+        if so2_img.ndim == 2:
+            so2_img = np.expand_dims(so2_img, axis=-1)
+        if thb_img.ndim == 2:
+            thb_img = np.expand_dims(thb_img, axis=-1)
+
+        so2_img = self.transform_so2(image=so2_img)['image']
+        thb_img = self.transform_thb(image=thb_img)['image']
+
+        return so2_img, thb_img, torch.tensor([item["so2_feats"], item['thb_feats']], dtype=torch.float32), torch.tensor([item["gt_binary"]], dtype=torch.float32)
 
 
 if __name__ == "__main__":
@@ -380,7 +478,16 @@ if __name__ == "__main__":
 
     from torch.utils.data import DataLoader
 
-    dataset = PairedROIMatDataset(
+    # dataset = PairedROIMatDataset(
+    #     so2_csv_path ='PAT features/roi_so2_image_metadata.csv',
+    #     thb_csv_path= 'PAT features/roi_thb_image_metadata.csv',
+    #     mat_root_dir='PAT features/ROI_MAT',
+    #     phase='train',
+    #     k_fold=5,
+    #     fold=0
+    # )
+
+    dataset = MultimodalDatasetWithRadiomics(
         so2_csv_path ='PAT features/roi_so2_image_metadata.csv',
         thb_csv_path= 'PAT features/roi_thb_image_metadata.csv',
         mat_root_dir='PAT features/ROI_MAT',
@@ -389,24 +496,25 @@ if __name__ == "__main__":
         fold=0
     )
 
-    loader = DataLoader(dataset, batch_size=5, shuffle=True)
+
+    loader = DataLoader(dataset, batch_size=1, shuffle=True)
 
     # Sample batch
-    for images, image2, labels in loader:
+    for images, image2,_, labels in loader:
         print(images.shape)  # (B, C, H, W)
-        print(labels.shape)  # (B,)
+        print(labels)  # (B,)
         plt.figure()
 		#plt.subplot(1,3,1)
         plt.imshow(images[0][0], cmap= 'gray')
         plt.show()
-        #break
+        break
 
 
     Malignant_count = 0 
     Benign_count = 0 
 
 
-    for images,images2, labels in loader:
+    for images,images2,_, labels in loader:
         if labels == 0: 
             Benign_count+=1 
         else: 

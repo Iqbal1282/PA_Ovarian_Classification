@@ -433,6 +433,20 @@ class BinaryClassificationTorch(nn.Module):
         return torch.cat(all_targets).numpy(), torch.cat(all_probs).numpy()
     
 
+class PatchEmbed(nn.Module):
+    def __init__(self, img_size=256, patch_size=16, in_chans=1, embed_dim=768):
+        super().__init__()
+        self.grid_size = img_size // patch_size
+        self.num_patches = self.grid_size ** 2
+        self.proj = nn.Conv2d(in_chans, embed_dim, kernel_size=patch_size, stride=patch_size)
+
+    def forward(self, x):
+        # x: [B, 1, H, W] → [B, embed_dim, H//P, W//P] → [B, num_patches, embed_dim]
+        x = self.proj(x)  # [B, E, H/P, W/P]
+        x = x.flatten(2).transpose(1, 2)  # [B, N, E]
+        return x
+    
+
 class MultiModalTransformerClassifier(nn.Module):
     def __init__(self, img_size=448, patch_size=32, embed_dim=256, num_heads=4, num_layers=6, num_classes=8):
         super().__init__()
@@ -530,6 +544,78 @@ class MultiModalTransformerClassifier(nn.Module):
     
 
 
+class ThreeModalTransformerWithRadiomics(nn.Module):
+    def __init__(self, img_size=256, patch_size=16, embed_dim=256, num_heads=4, num_layers=6, num_classes=1, rad_dim = 2, dropout=0.1):
+        super().__init__()
+
+        self.patch_embed = PatchEmbed(img_size, patch_size, in_chans=1, embed_dim=embed_dim)
+        self.num_patches = self.patch_embed.num_patches
+
+        # Modality embeddings
+        self.modality_embed = nn.Parameter(torch.zeros(2, 1, embed_dim))  # SO2, THb, US
+
+        # Radiomics embedding layers
+        self.rad_embed = nn.Linear(rad_dim, embed_dim)
+
+
+        # CLS token
+        self.cls_token = nn.Parameter(torch.zeros(1, 1, embed_dim))
+
+        # Positional embedding
+        total_tokens = 1 + (self.num_patches * 2) + 1  # +2 for radiomics
+        self.pos_embed = nn.Parameter(torch.zeros(1, total_tokens, embed_dim))
+        nn.init.trunc_normal_(self.pos_embed, std=0.02)
+
+        # Transformer
+        encoder_layer = nn.TransformerEncoderLayer(d_model=embed_dim, nhead=num_heads, dropout=dropout, batch_first=True)
+        self.transformer = nn.TransformerEncoder(encoder_layer, num_layers=num_layers)
+
+        self.norm = nn.LayerNorm(embed_dim)
+        self.head = nn.Linear(embed_dim, num_classes)
+
+    def forward(self, so2_img, thb_img, rad_feats):
+        B = so2_img.size(0)
+
+        cls_tokens = self.cls_token.expand(B, 1, -1)
+
+        so2_tokens = self.patch_embed(so2_img) + self.modality_embed[0]
+        thb_tokens = self.patch_embed(thb_img) + self.modality_embed[1]
+
+        rad_token = self.thb_rad_embed(rad_feats).unsqueeze(1)
+
+        tokens = torch.cat([cls_tokens, so2_tokens, thb_tokens, rad_token], dim=1)
+        tokens += self.pos_embed[:, :tokens.size(1)]
+
+        out = self.transformer(tokens)
+        cls_out = self.norm(out[:, 0])
+        logits = self.head(cls_out)
+        return logits
+    
+    def compute_loss(self, x1, x2, x3, y):
+        y = y.float()  # Ensure targets are float for BCE loss
+        score = self.forward(x1, x2, x3)
+        loss = self.loss_fn(score, y) #+ 0.5 * self.loss_fn2(score, y)
+        return loss
+    
+    def predict_on_loader(self, dataloader, threshold=0.5):
+        self.eval()
+        all_probs, all_targets = [], []
+
+        device = next(self.parameters()).device
+
+        with torch.no_grad():
+            for batch in dataloader:
+                x1, x2, x3, y = batch
+                x1, x2, x3, y = x1.to(device), x2.to(device), x3.to(device), y.to(device)
+                scores = self.forward(x1, x2, x3)
+               
+                probs = torch.sigmoid(scores)
+                all_probs.append(probs.cpu())
+                all_targets.append(y.cpu())
+
+        return torch.cat(all_targets).numpy(), torch.cat(all_probs).numpy()
+
+    
 if __name__ == "__main__":
     model = MultiModalCancerClassifierWithAttention(num_modalities=2, out_dim=1, fusion_dim=64, backbone_name='resnet18', dropout_prob=0.0)
     img1 = torch.randn(8, 1, 256, 256)
