@@ -20,7 +20,7 @@ SEED = 42
 np.random.seed(SEED); torch.manual_seed(SEED); random.seed(SEED)
 
 # Settings
-max_epochs = 50
+max_epochs = 100
 batch_size = 16
 k_fold = 5
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -186,7 +186,7 @@ for fold in range(k_fold):
 
         # ROC
         fpr, tpr, roc_auc = plot_roc_curve(y_true.cpu().numpy(), y_probs.cpu().numpy(), fold_idx=fold + 1)
-        
+
         combined_score = 0.2*val_wacc + 0.3* val_accuracy + 0.5* roc_auc 
 
         # Log all metrics

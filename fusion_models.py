@@ -573,6 +573,8 @@ class ThreeModalTransformerWithRadiomics(nn.Module):
         self.norm = nn.LayerNorm(embed_dim)
         self.head = nn.Linear(embed_dim, num_classes)
 
+        self.loss_fn = nn.BCEWithLogitsLoss(pos_weight=torch.tensor([3.0] * num_classes))
+        
     def forward(self, so2_img, thb_img, rad_feats):
         B = so2_img.size(0)
 
@@ -581,7 +583,7 @@ class ThreeModalTransformerWithRadiomics(nn.Module):
         so2_tokens = self.patch_embed(so2_img) + self.modality_embed[0]
         thb_tokens = self.patch_embed(thb_img) + self.modality_embed[1]
 
-        rad_token = self.thb_rad_embed(rad_feats).unsqueeze(1)
+        rad_token = self.rad_embed(rad_feats).unsqueeze(1)
 
         tokens = torch.cat([cls_tokens, so2_tokens, thb_tokens, rad_token], dim=1)
         tokens += self.pos_embed[:, :tokens.size(1)]
@@ -617,15 +619,17 @@ class ThreeModalTransformerWithRadiomics(nn.Module):
 
     
 if __name__ == "__main__":
-    model = MultiModalCancerClassifierWithAttention(num_modalities=2, out_dim=1, fusion_dim=64, backbone_name='resnet18', dropout_prob=0.0)
+    #model = MultiModalCancerClassifierWithAttention(num_modalities=2, out_dim=1, fusion_dim=64, backbone_name='resnet18', dropout_prob=0.0)
+    model = ThreeModalTransformerWithRadiomics(img_size=256, patch_size=32, embed_dim=256, num_heads=4, num_layers=6, num_classes=1, rad_dim=2, dropout=0.1)
     img1 = torch.randn(8, 1, 256, 256)
     img2 = torch.randn(8, 1, 256, 256)
     img3 = torch.randn(8, 1, 256, 256)
     img4 = torch.randn(8, 1, 256, 256)
+    rad = torch.randn(8, 2)  # Example radiomics features
 
-    output = model([img1, img2]) #, img4])  # shape: (8,)
+    output = model(img1, img2, rad) #, img4])  # shape: (8,)
 
-    #print(output.shape)  # Should print torch.Size([8, 1])
+    print(output.shape)  # Should print torch.Size([8, 1])
 
 
     model = MultiModalTransformerClassifier(num_classes=1, img_size = 64) #)
