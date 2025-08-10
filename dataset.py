@@ -299,7 +299,7 @@ class PairedROIMatDataset(Dataset):
         merged_df = merged_df.dropna(subset=["Filename_so2", "Filename_thb", "GT_so2"])
         merged_df["GT"] = (merged_df["GT_so2"] < 1).astype(int)
 
-        merged_df["IsTest"] = merged_df["PatientID_so2"] <= 60
+        merged_df["IsTest"] = merged_df["PatientID_so2"] <= 70
         test_case_set = set(merged_df[merged_df["IsTest"]]["PatientSide"].unique())
 
         grouped_gt = merged_df.groupby("PatientSide")["GT"].agg(lambda x: x.mode()[0])
@@ -491,7 +491,7 @@ if __name__ == "__main__":
         so2_csv_path ='PAT features/roi_so2_image_metadata.csv',
         thb_csv_path= 'PAT features/roi_thb_image_metadata.csv',
         mat_root_dir='PAT features/ROI_MAT',
-        phase='train',
+        phase='test',
         k_fold=5,
         fold=0
     )
