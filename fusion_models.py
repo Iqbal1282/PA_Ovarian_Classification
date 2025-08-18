@@ -573,6 +573,8 @@ class ThreeModalTransformerWithRadiomics(nn.Module):
         self.norm = nn.LayerNorm(embed_dim)
         self.head = nn.Linear(embed_dim, num_classes)
 
+        self.cls_return = False 
+
         self.loss_fn = nn.BCEWithLogitsLoss(pos_weight=torch.tensor([3.0] * num_classes))
         
     def forward(self, so2_img, thb_img, rad_feats):
@@ -590,6 +592,8 @@ class ThreeModalTransformerWithRadiomics(nn.Module):
 
         out = self.transformer(tokens)
         cls_out = self.norm(out[:, 0])
+        if self.cls_return:
+            return cls_out
         logits = self.head(cls_out)
         return logits
     
