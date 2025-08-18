@@ -20,7 +20,7 @@ SEED = 42
 np.random.seed(SEED); torch.manual_seed(SEED); random.seed(SEED)
 
 # Settings
-max_epochs = 100
+max_epochs = 1 #00
 batch_size = 16
 k_fold = 5
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -200,18 +200,13 @@ for fold in range(k_fold):
 
         if roc_auc > best_val_auc:
             best_val_auc = roc_auc
-            best_model_state = model.state_dict()
+            #best_model_state = model.state_dict()
+            torch.save(model.state_dict(), f"checkpoints/best_model_{fold}.pth") 
 
-        # if (train_auc*0.5 + roc_auc *0.5)  > best_val_auc:
-        #     best_val_auc = train_auc *0.5 + roc_auc *0.5
-        #     best_model_state = model.state_dict()
-
-        # # if combined_score > best_combined_score:
-        # #     best_combined_score = roc_auc
-        # #     best_model_state = model.state_dict()
 
     # --- Load Best Model and Test ---
-    model.load_state_dict(best_model_state)
+    #model.load_state_dict(best_model_state)
+    model.load_state_dict(torch.load(f"checkpoints/best_model_{fold}.pth"))
     y_true, y_probs = model.predict_on_loader(test_loader)
     fpr, tpr, roc_auc = plot_roc_curve(y_true, y_probs, fold_idx=fold + 1)
     wandb.log({

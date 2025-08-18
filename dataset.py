@@ -488,6 +488,7 @@ if __name__ == "__main__":
     # )
 
     dataset = MultimodalDatasetWithRadiomics(
+        
         so2_csv_path ='PAT features/roi_so2_image_metadata.csv',
         thb_csv_path= 'PAT features/roi_thb_image_metadata.csv',
         mat_root_dir='PAT features/ROI_MAT',

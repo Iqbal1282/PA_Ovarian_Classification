@@ -552,7 +552,7 @@ class ThreeModalTransformerWithRadiomics(nn.Module):
         self.num_patches = self.patch_embed.num_patches
 
         # Modality embeddings
-        self.modality_embed = nn.Parameter(torch.zeros(2, 1, embed_dim))  # SO2, THb, US
+        self.modality_embed = nn.Parameter(torch.zeros(3, 1, embed_dim))  # SO2, THb, US
 
         # Radiomics embedding layers
         self.rad_embed = nn.Linear(rad_dim, embed_dim)
@@ -583,7 +583,7 @@ class ThreeModalTransformerWithRadiomics(nn.Module):
         so2_tokens = self.patch_embed(so2_img) + self.modality_embed[0]
         thb_tokens = self.patch_embed(thb_img) + self.modality_embed[1]
 
-        rad_token = self.rad_embed(rad_feats).unsqueeze(1)
+        rad_token = self.rad_embed(rad_feats).unsqueeze(1) + self.modality_embed[2]
 
         tokens = torch.cat([cls_tokens, so2_tokens, thb_tokens, rad_token], dim=1)
         tokens += self.pos_embed[:, :tokens.size(1)]
