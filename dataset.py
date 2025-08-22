@@ -8,6 +8,7 @@ from sklearn.model_selection import StratifiedKFold
 import albumentations as A
 from albumentations.pytorch import ToTensorV2
 import matplotlib.pyplot as plt
+from utils import add_gaussian_noise_so2, add_gaussian_noise_thb
 
 
 img_size = 448
@@ -458,7 +459,10 @@ class MultimodalDatasetWithRadiomics(Dataset):
         so2_img = self.transform_so2(image=so2_img)['image']
         thb_img = self.transform_thb(image=thb_img)['image']
 
-        return so2_img, thb_img, torch.tensor([item["so2_feats"], item['thb_feats']], dtype=torch.float32), torch.tensor([item["gt_binary"]], dtype=torch.float32)
+        if self.phase == 'train':
+            return so2_img, thb_img, torch.tensor([add_gaussian_noise_so2(item["so2_feats"]), add_gaussian_noise_thb(item['thb_feats'])], dtype=torch.float32), torch.tensor([item["gt_binary"]], dtype=torch.float32)
+        else: 
+            return so2_img, thb_img, torch.tensor([item["so2_feats"], item['thb_feats']], dtype=torch.float32), torch.tensor([item["gt_binary"]], dtype=torch.float32)
 
 
 if __name__ == "__main__":

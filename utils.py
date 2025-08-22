@@ -2,6 +2,7 @@ from sklearn.metrics import roc_curve, auc, accuracy_score
 import matplotlib.pyplot as plt
 import wandb
 import os 
+import numpy as np 
 import matplotlib
 matplotlib.use('Agg')  # Use non-interactive backend
 
@@ -85,3 +86,22 @@ def compute_weighted_accuracy(preds, targets):
     pos_acc = pos_correct / (pos_total + 1e-8)
     neg_acc = neg_correct / (neg_total + 1e-8)
     return ((pos_acc + neg_acc) / 2).item()
+
+
+def add_gaussian_noise_so2(signal, noise_ratio=0.05, signal_min = 0.7,  signal_max = 0.8):
+    """
+    Add Gaussian noise relative to the signal’s dynamic range.
+    noise_ratio: fraction of signal std to use as noise std
+    """
+    noise_std = noise_ratio * (signal_max - signal_min)
+    noise = np.random.normal(0, noise_std)
+    return signal + noise
+
+def add_gaussian_noise_thb(signal, noise_ratio=0.05, signal_min =2.5, signal_max = 20):
+    """
+    Add Gaussian noise relative to the signal’s dynamic range.
+    noise_ratio: fraction of signal std to use as noise std
+    """
+    noise_std = noise_ratio * (signal_max - signal_min)
+    noise = np.random.normal(0, noise_std)
+    return signal + noise

@@ -201,12 +201,13 @@ for fold in range(k_fold):
         if roc_auc > best_val_auc:
             best_val_auc = roc_auc
             #best_model_state = model.state_dict()
-            torch.save(model.state_dict(), f"checkpoints/best_model_{fold}.pth") 
+            os.makedirs(f"checkpoints/{commit_log}", exist_ok = True)
+            torch.save(model.state_dict(), f"checkpoints/{commit_log}/best_model_{fold}.pth") 
 
 
     # --- Load Best Model and Test ---
     #model.load_state_dict(best_model_state)
-    model.load_state_dict(torch.load(f"checkpoints/best_model_{fold}.pth"))
+    model.load_state_dict(torch.load(f"checkpoints/{commit_log}/best_model_{fold}.pth"))
     y_true, y_probs = model.predict_on_loader(test_loader)
     fpr, tpr, roc_auc = plot_roc_curve(y_true, y_probs, fold_idx=fold + 1)
     wandb.log({
