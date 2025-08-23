@@ -20,7 +20,7 @@ SEED = 42
 np.random.seed(SEED); torch.manual_seed(SEED); random.seed(SEED)
 
 # Settings
-max_epochs = 100
+max_epochs = 1
 batch_size = 16
 k_fold = 5
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -207,7 +207,9 @@ for fold in range(k_fold):
 
     # --- Load Best Model and Test ---
     #model.load_state_dict(best_model_state)
-    model.load_state_dict(torch.load(f"checkpoints/{commit_log}/best_model_{fold}.pth"))
+    #model.load_state_dict(torch.load(f"checkpoints/{commit_log}/best_model_{fold}.pth"))
+    model.load_state_dict(torch.load(r'checkpoints\418f48f\best_model_0.pth'))
+    model.eval()
     y_true, y_probs = model.predict_on_loader(test_loader)
     fpr, tpr, roc_auc = plot_roc_curve(y_true, y_probs, fold_idx=fold + 1)
     wandb.log({
