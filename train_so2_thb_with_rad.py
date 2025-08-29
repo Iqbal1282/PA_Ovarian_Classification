@@ -51,6 +51,8 @@ train_config = {
 
 # Storage for fold-wise metrics
 all_fprs, all_tprs, all_aucs = [], [], []
+all_labels_save, all_probs_save = [], []
+
 
 # --- Start K-Fold Training ---
 for fold in range(k_fold):
@@ -200,7 +202,9 @@ for fold in range(k_fold):
 
         if roc_auc > best_val_auc:
             best_val_auc = roc_auc
-            best_model_state = model.state_dict()
+            #best_model_state = model.state_dict()
+            os.makedirs(f"checkpoints/{commit_log}", exist_ok= True)
+            torch.save(model.state_dict(), f"checkpoints/{commit_log}/best_model_{fold}.pth")  # Save to disk
 
         # if (train_auc*0.5 + roc_auc *0.5)  > best_val_auc:
         #     best_val_auc = train_auc *0.5 + roc_auc *0.5
@@ -211,7 +215,7 @@ for fold in range(k_fold):
         # #     best_model_state = model.state_dict()
 
     # --- Load Best Model and Test ---
-    model.load_state_dict(best_model_state)
+    model.load_state_dict(torch.load(f"checkpoints/{commit_log}/best_model_{fold}.pth"))  # Load best weights
     y_true, y_probs = model.predict_on_loader(test_loader)
     fpr, tpr, roc_auc = plot_roc_curve(y_true, y_probs, fold_idx=fold + 1)
     wandb.log({
@@ -222,6 +226,10 @@ for fold in range(k_fold):
     all_fprs.append(fpr)
     all_tprs.append(tpr)
     all_aucs.append(roc_auc)
+
+    all_labels_save.append(y_true.reshape(-1))
+    all_probs_save.append(y_probs.reshape(-1))
+
     run.finish()
 
 # --- Plot Multi-Fold ROC Curve ---
@@ -260,11 +268,13 @@ roc_data = {
     'all_aucs': all_aucs,
     'mean_fpr': mean_fpr,
     'mean_tpr': mean_tpr,
-    'mean_auc': mean_auc
+    'mean_auc': mean_auc,
+    'all_labels': all_labels_save,
+    'all_probs': all_probs_save
 }
 
 # Save as pickle
-with open('plots/roc_data.pkl', 'wb') as f:
+with open(f'plots/roc_data_{commit_log}_with_labels.pkl', 'wb') as f:
     pickle.dump(roc_data, f)
 
 # Final ROC to WandB
